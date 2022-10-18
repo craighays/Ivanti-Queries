@@ -1,0 +1,14 @@
+Ivanti Endpoint Manager stores IP addresses with leading zeros in it's database. E.g. 10.10.20.1 is stored as 010.010.020.001. These can be stripped out with the following queries.
+
+# SQL
+
+select  tcp.Address,  
+concat(
+cast(PARSENAME(tcp.address, 4) AS INT),'.', cast(PARSENAME(tcp.address, 3) AS INT),'.',cast(PARSENAME(tcp.address, 2) as INT),'.', cast(PARSENAME(tcp.address, 1) AS INT)
+) as IPAddress from TCP tcp
+
+# Excel
+
+=CONCAT(INT(LEFT(A2,FIND(".",A2)-1)),".",INT(MID(A2,FIND(".",A2)+1,FIND(".",A2,FIND(".",A2)+1)-FIND(".",A2)-1)),".",INT(MID(A2,FIND(".",A2,FIND(".",A2)+1)+1,FIND(".",A2,FIND(".",A2,FIND(".",A2)+1)+1)-(FIND(".",A2,FIND(".",A2)+1)+1))),".",INT(MID(A2,FIND(".",A2,FIND(".",A2,FIND(".",A2)+1)+1)+1,LEN(A2)-FIND(".",A2,FIND(".",A2,FIND(".",A2)+1)+1))))
+
+A2 being the cell that contains the Ivanti formatted IP address. It works just like the SQL query by seperating the IP address into 4 values based on the '.' , then converts them all to INT to strip away the leading 0s, then concats them all back together
